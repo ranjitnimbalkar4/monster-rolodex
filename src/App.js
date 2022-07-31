@@ -1,55 +1,59 @@
-import './App.css';
-import { Component } from 'react';
+import "./App.css";
+import { Component } from "react";
+import CardList from "./components/card-list/card-list.component";
+import SearchBox from "./components/search-box/search-box.component";
 
-class App extends Component{
-  
+class App extends Component {
   constructor() {
     super();
     console.log("Constructor..");
     this.state = {
-      monsters : [],
-      searchField : ""
+      monsters: [],
+      searchField: "",
     };
   }
 
-  componentDidMount(){
-    console.log("compoenentDidMount..")
-    fetch('https://jsonplaceholder.typicode.com/users')
+  componentDidMount() {
+    console.log("compoenentDidMount..");
+    fetch("https://jsonplaceholder.typicode.com/users")
       .then((response) => response.json())
-      .then((users) => this.setState( 
-          () => { return {monsters : users}},          
-          () => {console.log(this.state);}
-      ));
-      
+      .then((users) =>
+        this.setState(
+          () => {
+            return { monsters: users };
+          },
+          () => {
+            console.log(this.state);
+          }
+        )
+      );
   }
+
+  onSerachChange = (event) => {
+    const searchField = event.target.value.toLocaleLowerCase();
+    this.setState(() => {
+      return { searchField };
+    });
+  };
 
   render() {
     console.log("Rendering Compnent..");
 
-    const filteredMonsters = this.state.monsters.filter((monster) => {
-      return monster.name.toLocaleLowerCase().includes(this.state.searchField);
+    const { monsters, searchField } = this.state;
+    const { onSerachChange } = this;
+
+    const filteredMonsters = monsters.filter((monster) => {
+      return monster.name.toLocaleLowerCase().includes(searchField);
     });
-    
+
     return (
       <div className="App">
-         <input className='serach-box' type='search' placeholder='search monsters' onChange={(event) => {
-            const searchField = event.target.value.toLocaleLowerCase();           
-            this.setState(() => {
-              return { searchField };
-            });
-         }}/>
+        <SearchBox className='monster-serach-box' onSerachHandler={onSerachChange} placeholder='search monsters'/>
 
-          { filteredMonsters.map(monster => {
-             return (
-              <div key={monster.id}>
-                <h1>{monster.name}</h1>
-              </div>)
-            })}              
+        <CardList monsters={filteredMonsters} />
       </div>
     );
   }
-
 }
-
 
 export default App;
